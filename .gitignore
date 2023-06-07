@@ -1,0 +1,7 @@
+.mypy_*
+.vscode
+.env
+token.txt
+*.csv
+vk-report
+run.sh
