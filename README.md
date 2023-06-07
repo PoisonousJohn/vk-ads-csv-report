@@ -3,6 +3,8 @@ Get ad plans statistics reports and write it to csv
 
 VK Ads API token is read from VK_ADS_TOKEN env variable
 
+Important: this script uses a [New Vk Ads API](https://ads.vk.com/doc/api/info/%D0%90%D0%B2%D1%82%D0%BE%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B2%20API)
+
 ### Example usage
 
 ```
