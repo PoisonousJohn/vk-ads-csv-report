@@ -18,11 +18,28 @@ class Api:
 
     def __init__(self, token: str) -> None:
         if not token:
-            raise RuntimeError("Token is empy")
+            raise RuntimeError("Token is empty")
         self.token = token
 
     def _get_headers(self):
         return {"Authorization": f"Bearer {self.token}"}
+
+    def get_all_ad_plans(self) -> List[dict]:
+        result = []
+        query_params = {
+            "limit": 20,
+            "offset": 0,
+        }
+
+        while True:
+            plans = self.get_method("ad_plans", query_params=query_params)
+            result.extend(plans["items"])
+            total_count = plans["count"]
+            query_params["offset"] += query_params["limit"]
+            if query_params["offset"] >= total_count:
+                break
+
+        return result
 
     def get_plans_stats(self, plan_ids: List[str], date_from: date, date_to: date):
         params = {
@@ -104,14 +121,15 @@ def main():
 
     api = Api(os.getenv("VK_ADS_TOKEN"))
 
-    plans = api.get_method("ad_plans")
-    id_to_name = {plan["id"]: plan["name"] for plan in plans["items"]}
+    plans = api.get_all_ad_plans()
+    logger.info("Found %s plans", len(plans))
+
+    id_to_name = {plan["id"]: plan["name"] for plan in plans}
+    plan_ids = [str(plan["id"]) for plan in plans]
 
     yesterday = date.today() - timedelta(days=1)
     date_to = parsed_args.date_to or yesterday
     date_from = parsed_args.date_from or date.today() - timedelta(days=15)
-    plan_ids = [str(plan["id"]) for plan in plans["items"]]
-    logger.info("Found %s plans", len(plan_ids))
 
     stats = api.get_plans_stats(plan_ids=plan_ids, date_from=date_from, date_to=date_to)
 
